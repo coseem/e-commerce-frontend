@@ -1,0 +1,105 @@
+<form [formGroup]="form" (submit)="submit()">
+    <div class="flex flex-col md:flex-row gap-8">
+        <div class="md:w-1/2">
+            <div class="card flex flex-col gap-4">
+                <div class="font-semibold text-xl">Основная информация товара</div>
+
+                <div class="flex flex-col gap-2">
+                    <label>Название товара <span class="text-red-500">*</span></label>
+                    <input pInputText type="text" placeholder="Название товара" formControlName="name" />
+                    @if (form.controls["name"].invalid && form.controls["name"].touched) {
+                        <div class="alert">Введите название товара</div>
+                    }
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="barcode">Штрихкод товара</label>
+                    <input pInputText id="barcode" type="number" placeholder="Сканируйте или введите штрихкод"
+                           formControlName="barcode" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="name1">Артикул</label>
+                    <input pInputText id="name1" type="text" placeholder="Артикул" formControlName="sku" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label>Категория товара</label>
+
+                    <div class="flex gap-2">
+                        <p-select [options]="categories.value()" [showClear]="true" optionLabel="name" optionValue="id"
+                                  placeholder="Выберите категорию товара"
+                                  class="w-full" formControlName="category" />
+                        <p-button icon="pi pi-plus" aria-label="Добавить" (click)="addCategory()"/>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="11">Закупочная цена</label>
+                    <input pInputText id="11" type="number" placeholder="Закупочная цена"
+                           formControlName="purchasePrice" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="22">Продажная цена</label>
+                    <input pInputText id="22" type="number" placeholder="Продажная цена" formControlName="salePrice" />
+                </div>
+
+                <div class="flex justify-end">
+                    <p-button type="button" label="Сохранить" severity="primary" [disabled]="form.invalid"
+                              (onClick)="submit()" />
+                </div>
+            </div>
+        </div>
+        <div class="md:w-1/2">
+            <div class="card flex flex-col gap-4">
+                <div class="font-semibold text-xl">Дополнительная информация товара</div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="description">Описание товара</label>
+                    <textarea pTextarea id="description" rows="4" class="p-textarea p-component p-textarea-fluid"
+                              formControlName="description"></textarea>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label>Страна</label>
+                    <p-autocomplete [dropdown]="true" [suggestions]="filteredCountries" [showClear]="true" placeholder="Выберите страну" class="w-full" optionLabel="name" optionValue="code" formControlName="country" (completeMethod)="searchCountry($event)" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label>Поставщик</label>
+
+                    <div class="flex gap-2">
+                        <p-select [options]="[]" [showClear]="true" optionLabel="name" optionValue="id"
+                                  placeholder="Выберите поставщика"
+                                  class="w-full" formControlName="supplier" />
+                        <p-button icon="pi pi-plus" aria-label="Save" />
+                    </div>
+                </div>
+
+                <p-divider />
+
+                <div class="flex flex-col gap-2">
+                    <label>Единица измерения</label>
+
+                    <div class="flex gap-2">
+                        <p-select [options]="[]" [showClear]="true" optionLabel="name" optionValue="id"
+                                  placeholder="Выберите единицу измерения"
+                                  class="w-full" formControlName="unit" />
+                        <p-button icon="pi pi-plus" aria-label="Save" />
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="weight">Вес</label>
+                    <input pInputText id="weight" type="number" placeholder="Вес" formControlName="weight" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="volume">Объем</label>
+                    <input pInputText id="volume" type="number" placeholder="Объем" formControlName="volume" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

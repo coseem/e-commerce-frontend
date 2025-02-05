@@ -1,0 +1,12 @@
+<div class="flex flex-col gap-2">
+    <label>Название категории <span class="text-red-500">*</span></label>
+    <input pInputText type="text" placeholder="Введите название категории" [formControl]="categoryControl" />
+    @if (categoryControl.invalid && categoryControl.touched) {
+        <p-message severity="error" variant="simple" size="small">Введите название категории</p-message>
+    }
+</div>
+
+<div class="flex justify-end gap-2 mt-4">
+    <p-button label="Отмена" severity="secondary" (click)="close()" />
+    <p-button label="Сохранить" (click)="submit()" [disabled]="categoryControl.invalid" [loading]="loading"/>
+</div>

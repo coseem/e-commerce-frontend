@@ -8,7 +8,7 @@ import { ILoginRequest, ILoginResponse } from '../interfaces/auth.interface';
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = environment.apiUrl + 'auth';
+    private apiUrl = environment.apiUrl + '/auth';
     private http = inject(HttpClient);
     private readonly TOKEN_KEY = 'auth_token';
 
@@ -27,7 +27,7 @@ export class AuthService {
     }
 
     // Удаляем токен при логауте
-    clearToken(): void {
+    logout(): void {
         localStorage.removeItem(this.TOKEN_KEY);
     }
 }

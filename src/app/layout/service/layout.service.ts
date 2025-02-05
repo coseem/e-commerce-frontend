@@ -1,5 +1,6 @@
 import { Injectable, effect, signal, computed } from '@angular/core';
 import { Subject } from 'rxjs';
+import { layouts } from 'chart.js';
 
 export interface layoutConfig {
     preset?: string;
@@ -42,7 +43,7 @@ export class LayoutService {
         menuHoverActive: false
     };
 
-    layoutConfig = signal<layoutConfig>(this._config);
+    layoutConfig = signal<layoutConfig>({});
 
     layoutState = signal<LayoutState>(this._state);
 
@@ -79,6 +80,14 @@ export class LayoutService {
     private initialized = false;
 
     constructor() {
+        const getLayoutConfig = localStorage.getItem('layoutConfig');
+
+        if (getLayoutConfig) {
+            this._config = JSON.parse(getLayoutConfig);
+        }
+
+        this.layoutConfig.set(this._config);
+
         effect(() => {
             const config = this.layoutConfig();
             if (config) {
@@ -88,7 +97,6 @@ export class LayoutService {
 
         effect(() => {
             const config = this.layoutConfig();
-
             if (!this.initialized || !config) {
                 this.initialized = true;
                 return;
@@ -166,6 +174,8 @@ export class LayoutService {
     onConfigUpdate() {
         this._config = { ...this.layoutConfig() };
         this.configUpdate.next(this.layoutConfig());
+
+        localStorage.setItem('layoutConfig', JSON.stringify(this.layoutConfig()));
     }
 
     onMenuStateChange(event: MenuChangeEvent) {
