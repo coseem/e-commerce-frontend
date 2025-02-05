@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
@@ -8,14 +8,16 @@ import { AppMenuitem } from './app.menuitem';
     selector: 'app-menu',
     standalone: true,
     imports: [CommonModule, AppMenuitem, RouterModule],
-    template: `<ul class="layout-menu">
-        <ng-container *ngFor="let item of model; let i = index">
-            <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
-            <li *ngIf="item.separator" class="menu-separator"></li>
-        </ng-container>
-    </ul> `
+    template: `
+        <ul class="layout-menu">
+            <ng-container *ngFor="let item of model; let i = index">
+                <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
+                <li *ngIf="item.separator" class="menu-separator"></li>
+            </ng-container>
+        </ul>
+    `
 })
-export class AppMenu {
+export class AppMenu implements OnInit {
     model: MenuItem[] = [];
 
     ngOnInit() {
@@ -25,11 +27,61 @@ export class AppMenu {
                 items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
             },
             {
+                items: [
+                    {
+                        label: 'Заказы',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [{ label: 'Заказы', icon: 'pi pi-fw pi-bookmark' }]
+                    }
+                ]
+            },
+            {
+                items: [
+                    {
+                        label: 'Товары',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            { label: 'Управление товарами', icon: 'pi pi-fw pi-bookmark' },
+                            { label: 'Управление категорией', icon: 'pi pi-fw pi-bookmark' }
+                        ]
+                    }
+                ]
+            },
+            {
+                items: [
+                    {
+                        label: 'Клиенты',
+                        icon: 'pi pi-fw pi-bookmark'
+                    }
+                ]
+            },
+            {
+                items: [
+                    {
+                        label: 'Отчеты',
+                        icon: 'pi pi-fw pi-bookmark'
+                    }
+                ]
+            },
+            {
+                items: [
+                    {
+                        label: 'Настройки',
+                        icon: 'pi pi-fw pi-bookmark'
+                    }
+                ]
+            },
+            {
                 label: 'UI Components',
                 items: [
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
                     { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
-                    { label: 'Button', icon: 'pi pi-fw pi-mobile', class: 'rotated-icon', routerLink: ['/uikit/button'] },
+                    {
+                        label: 'Button',
+                        icon: 'pi pi-fw pi-mobile',
+                        class: 'rotated-icon',
+                        routerLink: ['/uikit/button']
+                    },
                     { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/uikit/table'] },
                     { label: 'List', icon: 'pi pi-fw pi-list', routerLink: ['/uikit/list'] },
                     { label: 'Tree', icon: 'pi pi-fw pi-share-alt', routerLink: ['/uikit/tree'] },
@@ -133,22 +185,6 @@ export class AppMenu {
                                 items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
                             }
                         ]
-                    }
-                ]
-            },
-            {
-                label: 'Get Started',
-                items: [
-                    {
-                        label: 'Documentation',
-                        icon: 'pi pi-fw pi-book',
-                        routerLink: ['/documentation']
-                    },
-                    {
-                        label: 'View Source',
-                        icon: 'pi pi-fw pi-github',
-                        url: 'https://github.com/primefaces/sakai-ng',
-                        target: '_blank'
                     }
                 ]
             }
