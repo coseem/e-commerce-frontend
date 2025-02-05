@@ -41,7 +41,7 @@ export class AppMenu implements OnInit {
                         label: 'Товары',
                         icon: 'pi pi-fw pi-bookmark',
                         items: [
-                            { label: 'Управление товарами', icon: 'pi pi-fw pi-bookmark' },
+                            { label: 'Управление товарами', icon: 'pi pi-fw pi-bookmark', routerLink: ['/pages/products'] },
                             { label: 'Управление категорией', icon: 'pi pi-fw pi-bookmark' }
                         ]
                     }
