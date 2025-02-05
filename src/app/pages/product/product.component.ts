@@ -1,12 +1,12 @@
 import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Product, ProductService } from '../service/product.service';
+import { Product, ProductService } from '../../services/product.service';
 import { Table, TableModule } from 'primeng/table';
 import { Toolbar } from 'primeng/toolbar';
 import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
-import { CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Rating } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { Tag } from 'primeng/tag';
@@ -32,7 +32,7 @@ interface ExportColumn {
 
 @Component({
     selector: 'app-product',
-    imports: [Toolbar, Button, TableModule, IconField, InputIcon, CurrencyPipe, Rating, FormsModule, Tag, Dialog, Select, RadioButton, InputNumber, InputText, Textarea, ConfirmDialog],
+    imports: [CommonModule, Toolbar, Button, TableModule, IconField, InputIcon, CurrencyPipe, Rating, FormsModule, Tag, Dialog, Select, RadioButton, InputNumber, InputText, Textarea, ConfirmDialog],
     templateUrl: './product.component.html',
     styleUrl: './product.component.scss',
     providers: [MessageService, ProductService, ConfirmationService]
@@ -109,8 +109,8 @@ export class ProductComponent implements OnInit {
 
     deleteSelectedProducts() {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected products?',
-            header: 'Confirm',
+            message: 'Вы уверены, что хотите удалить выбранные товары?',
+            header: 'Подтверждение',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.products.set(this.products().filter((val) => !this.selectedProducts?.includes(val)));
@@ -132,8 +132,8 @@ export class ProductComponent implements OnInit {
 
     deleteProduct(product: Product) {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + product.name + '?',
-            header: 'Confirm',
+            message: 'Вы уверены, что хотите удалить ' + product.name + '?',
+            header: 'Подтверждение',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.products.set(this.products().filter((val) => val.id !== product.id));

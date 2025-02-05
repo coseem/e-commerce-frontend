@@ -8,7 +8,7 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../service/auth.service';
+import { AuthService } from '../../../services/auth.service';
 import { first } from 'rxjs';
 
 @Component({
