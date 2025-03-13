@@ -61,9 +61,9 @@ export class AppMenu implements OnInit {
             {
                 items: [
                     {
-                        label: 'Поставщики',
+                        label: 'Контрагенты',
                         icon: 'pi pi-fw pi-users',
-                        routerLink: ['/suppliers']
+                        routerLink: ['/counterparties']
                     }
                 ]
             },

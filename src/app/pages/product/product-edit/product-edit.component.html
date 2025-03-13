@@ -63,7 +63,10 @@
 
                 <div class="flex flex-col gap-2">
                     <label>Страна</label>
-                    <p-autocomplete [dropdown]="true" [suggestions]="filteredCountries" [showClear]="true" placeholder="Выберите страну" class="w-full" optionLabel="name" optionValue="code" formControlName="country" (completeMethod)="searchCountry($event)" />
+                    <p-select [options]="filteredCountries" [showClear]="true" optionLabel="name" optionValue="id"
+                              placeholder="Выберите страну"
+                              class="w-full" formControlName="country" />
+                    <!--<p-autocomplete [dropdown]="true" [suggestions]="filteredCountries" [showClear]="true" placeholder="Выберите страну" class="w-full" optionLabel="name" optionValue="code" formControlName="country" (completeMethod)="searchCountry($event)" />-->
                 </div>
 
                 <div class="flex flex-col gap-2">
@@ -72,7 +75,7 @@
                     <div class="flex gap-2">
                         <p-select [options]="[]" [showClear]="true" optionLabel="name" optionValue="id"
                                   placeholder="Выберите поставщика"
-                                  class="w-full" formControlName="supplier" />
+                                  class="w-full" formControlName="counterparty" />
                         <p-button icon="pi pi-plus" aria-label="Save" />
                     </div>
                 </div>
@@ -83,7 +86,7 @@
                     <label>Единица измерения</label>
 
                     <div class="flex gap-2">
-                        <p-select [options]="[]" [showClear]="true" optionLabel="name" optionValue="id"
+                        <p-select [options]="units.value()" [showClear]="true" optionLabel="name" optionValue="id"
                                   placeholder="Выберите единицу измерения"
                                   class="w-full" formControlName="unit" />
                         <p-button icon="pi pi-plus" aria-label="Save" />

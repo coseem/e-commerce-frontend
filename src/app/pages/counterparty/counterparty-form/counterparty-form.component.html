@@ -1,0 +1,153 @@
+<form [formGroup]="counterpartyForm" (ngSubmit)="onSubmit()">
+    <p-card>
+        <div class="flex flex-col gap-2">
+            <label>Наименование <span class="text-red-500">*</span></label>
+            <input pInputText type="text" placeholder="Введите наименование" formControlName="name" />
+            <p-message severity="error" variant="simple" size="small" *ngIf="counterpartyForm.get('name')?.invalid && counterpartyForm.get('name')?.touched">Обязательное поле, минимум 2 символа</p-message>
+        </div>
+    </p-card>
+
+    <div class="flex flex-col md:flex-row gap-8 mt-8">
+        <div class="md:w-1/2">
+            <div class=" card flex flex-col gap-4 !mb-8">
+                <h4>О контрагенте</h4>
+
+                <div class="flex flex-col gap-2">
+                    <label for="phone">Телефон</label>
+                    <input pInputText id="phone" type="tel" placeholder="Введите номер телефона"
+                           formControlName="phone" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="email">Электронный адрес</label>
+                    <input pInputText id="email" type="email" placeholder="Введите электронный адрес"
+                           formControlName="email" />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="address">Фактический адрес</label>
+                    <textarea pTextarea id="address" rows="2" class="p-textarea p-component p-textarea-fluid"
+                              formControlName="address"></textarea>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="address_comment">Комментарий к адресу</label>
+                    <textarea pTextarea id="address_comment" rows="2" class="p-textarea p-component p-textarea-fluid"
+                              formControlName="address_comment"></textarea>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label for="comment">Комментарий</label>
+                    <textarea pTextarea id="comment" rows="2" class="p-textarea p-component p-textarea-fluid"
+                              formControlName="comment"></textarea>
+                </div>
+
+                <div class="flex justify-end">
+                    <p-button type="submit" label="Сохранить" severity="primary" [disabled]="counterpartyForm.invalid" />
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>Реквизиты</h4>
+
+                <p-button label="Добавить реквизит" type="button" variant="outlined" icon="pi pi-plus" (click)="addRequisite()"/>
+
+                <div formArrayName="requisites">
+                    <div *ngFor="let requisite of requisites.controls; let i = index; let last = last" [formGroupName]="i" class="mt-4 flex flex-col gap-4">
+                        <div class="flex flex-col gap-2">
+                            <label>Тип контрагента <span class="text-red-500">*</span></label>
+                            <p-select [options]="counterpartyTypes" [showClear]="true" placeholder="Выберите тип контрагента"
+                                      class="w-full" formControlName="type" />
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="inn">ИНН</label>
+                            <input pInputText id="inn" type="text" placeholder="Введите ИНН" formControlName="inn" />
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="full_name">Полное наименование</label>
+                            <input pInputText id="full_name" type="text" placeholder="Введите полное наименование" formControlName="full_name" />
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="legal_address">Юридический адрес</label>
+                            <textarea pTextarea id="legal_address" rows="2" class="p-textarea p-component p-textarea-fluid"
+                                      formControlName="legal_address"></textarea>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="legal_address_comment">Комментарий к адресу</label>
+                            <textarea pTextarea id="legal_address_comment" rows="2" class="p-textarea p-component p-textarea-fluid"
+                                      formControlName="legal_address_comment"></textarea>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="kpp">КПП</label>
+                            <input pInputText id="kpp" type="text" placeholder="Введите КПП" formControlName="kpp" />
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="ogrn">ОГРН</label>
+                            <input pInputText id="ogrn" type="text" placeholder="Введите ОГРН" formControlName="ogrn" />
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="okpo">ОКПО</label>
+                            <input pInputText id="okpo" type="text" placeholder="Введите ОКПО" formControlName="okpo" />
+                        </div>
+
+                        <p-button label="Удалить" type="button" variant="outlined" severity="danger" icon="pi pi-trash" (click)="removeRequisite(i)"/>
+
+                        <p-divider *ngIf="!last"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="md:w-1/2">
+            <div class="card">
+                <h4>Контактные лица</h4>
+
+                <p-button label="Добавить контакт" type="button" variant="outlined" icon="pi pi-plus" (click)="addContact()"/>
+
+                <div formArrayName="contacts">
+                    <div *ngFor="let contact of contacts.controls; let i = index; let last = last" [formGroupName]="i" class="mt-4 flex flex-col gap-4">
+                        <div class="flex flex-col gap-2">
+                            <label>ФИО <span class="text-red-500">*</span></label>
+                            <input pInputText type="text" placeholder="Введите ФИО" formControlName="full_name" />
+                            <p-message severity="error" variant="simple" size="small" *ngIf="counterpartyForm.get('name')?.invalid && counterpartyForm.get('name')?.touched">Обязательное поле, минимум 2 символа</p-message>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="position">Должность</label>
+                            <input pInputText id="position" type="text" placeholder="Введите должность"
+                                   formControlName="position" />
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="phone2">Телефон</label>
+                            <input pInputText id="phone2" type="tel" placeholder="Введите номер телефона"
+                                   formControlName="phone" />
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="email2">Электронный адрес</label>
+                            <input pInputText id="email2" type="email" placeholder="Введите электронный адрес"
+                                   formControlName="email" />
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label for="comment2">Комментарий</label>
+                            <textarea pTextarea id="comment2" rows="2" class="p-textarea p-component p-textarea-fluid"
+                                      formControlName="comment"></textarea>
+                        </div>
+
+                        <p-button label="Удалить" type="button" variant="outlined" severity="danger" icon="pi pi-trash" (click)="removeContact(i)"/>
+
+                        <p-divider *ngIf="!last"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

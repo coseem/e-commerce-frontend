@@ -17,12 +17,14 @@ import { ICategory } from '../../../interfaces/category.interface';
 import { DialogService } from 'primeng/dynamicdialog';
 import { CountryService } from '../../../services/country.service';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
-import { NgIf } from '@angular/common';
 import { ICountry } from '../../../interfaces/country.interface';
+import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { UnitService } from '../../../services/unit.service';
 
 @Component({
     selector: 'app-product-edit',
-    imports: [InputText, TextareaModule, FormsModule, ReactiveFormsModule, Button, Select, Divider, AutoCompleteModule, NgIf],
+    imports: [InputText, TextareaModule, FormsModule, ReactiveFormsModule, Button, Select, Divider, AutoCompleteModule],
     templateUrl: './product-edit.component.html',
     styleUrl: './product-edit.component.scss',
     providers: [ProductService, DialogService]
@@ -33,6 +35,9 @@ export class ProductEditComponent implements OnInit {
     public categories = rxResource({
         loader: () => this.categoryService.getAll()
     });
+    public units = rxResource({
+        loader: () => this.unitService.getAll()
+    });
     public countries: ICountry[] = [];
     public filteredCountries: ICountry[] = [];
     private buffer: string = ''; // Буфер для накопления символов
@@ -40,7 +45,10 @@ export class ProductEditComponent implements OnInit {
     private productService = inject(ProductService);
     private categoryService = inject(CategoryService);
     private countryService = inject(CountryService);
+    private unitService = inject(UnitService);
     private dialogService = inject(DialogService);
+    private messageService = inject(MessageService);
+    private router = inject(Router);
 
     constructor() {
         this.form = new FormGroup({
@@ -53,7 +61,7 @@ export class ProductEditComponent implements OnInit {
             salePrice: new FormControl(null),
             description: new FormControl(null),
             country: new FormControl(null),
-            supplier: new FormControl(null),
+            counterparty: new FormControl(null),
             unit: new FormControl(null),
             weight: new FormControl(0),
             volume: new FormControl(0)
@@ -71,7 +79,8 @@ export class ProductEditComponent implements OnInit {
             .create(formData)
             .pipe(first())
             .subscribe((product) => {
-                console.log(product);
+                this.messageService.add({ severity: 'success', summary: 'Успех', detail: 'Товар успешно добавлен.', life: 3000 });
+                this.router.navigate(['/products']).then();
             });
     }
 
