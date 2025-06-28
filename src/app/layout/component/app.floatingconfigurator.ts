@@ -18,11 +18,11 @@ import { LayoutService } from '../service/layout.service';
     `
 })
 export class AppFloatingConfigurator {
-    LayoutService = inject(LayoutService);
+    private readonly _layoutService = inject(LayoutService);
 
-    isDarkTheme = computed(() => this.LayoutService.layoutConfig().darkTheme);
+    public readonly isDarkTheme = computed(() => this._layoutService.layoutConfig().darkTheme);
 
     toggleDarkMode() {
-        this.LayoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+        this._layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
     }
 }

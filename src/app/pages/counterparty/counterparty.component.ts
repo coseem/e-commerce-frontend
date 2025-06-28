@@ -9,8 +9,8 @@ import { Table, TableModule } from 'primeng/table';
 import { Toolbar } from 'primeng/toolbar';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { first } from 'rxjs';
-import { CounterpartyService } from '../../services/counterparty.service';
-import { ICounterparty } from '../../interfaces/counterparty.model';
+import { CounterpartyService } from '../../services';
+import { ICounterParty } from '../../interfaces';
 
 @Component({
     selector: 'app-counterparty',
@@ -20,25 +20,27 @@ import { ICounterparty } from '../../interfaces/counterparty.model';
     styleUrl: './counterparty.component.scss'
 })
 export class CounterpartyComponent implements OnInit {
-    counterparties = signal<ICounterparty[]>([]);
-    selectedCounterparties!: ICounterparty[] | null;
-    statuses!: any[];
-    @ViewChild('dt') dt!: Table;
+    public readonly counterparties = signal<ICounterParty[]>([]);
+    public readonly selectedCounterparties = signal<ICounterParty[] | null>(null);
 
-    private counterpartyService = inject(CounterpartyService);
-    private messageService = inject(MessageService);
-    private confirmationService = inject(ConfirmationService);
+    private readonly _counterpartyService = inject(CounterpartyService);
+    private readonly _messageService = inject(MessageService);
+    private readonly _confirmationService = inject(ConfirmationService);
+
+    public statuses!: any[];
+
+    @ViewChild('dt') private readonly _dt!: Table;
 
     exportCSV() {
-        this.dt.exportCSV();
+        this._dt.exportCSV();
     }
 
     ngOnInit() {
-        this.loadProducts();
+        this._loadCounterparties();
     }
 
-    loadProducts() {
-        this.counterpartyService
+    private _loadCounterparties() {
+        this._counterpartyService
             .getAll()
             .pipe(first())
             .subscribe((r) => this.counterparties.set(r));
@@ -48,36 +50,35 @@ export class CounterpartyComponent implements OnInit {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 
-    deleteSelectedProducts() {
-        this.confirmationService.confirm({
-            message: 'Вы уверены, что хотите удалить выбранные товары?',
+    deleteSelectedCounterparties() {
+        this._confirmationService.confirm({
+            message: 'Вы уверены, что хотите удалить выбранные контрагенты?',
             header: 'Подтверждение',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.counterparties.set(this.counterparties().filter((val) => !this.selectedCounterparties?.includes(val)));
-                this.selectedCounterparties = null;
-                this.messageService.add({
+                this.counterparties.set(this.counterparties().filter((val) => !this.selectedCounterparties()?.includes(val)));
+                this.selectedCounterparties.set(null);
+                this._messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Products Deleted',
+                    detail: 'Counterparties Deleted',
                     life: 3000
                 });
             }
         });
     }
 
-    deleteProduct(product: ICounterparty) {
-        this.confirmationService.confirm({
-            message: 'Вы уверены, что хотите удалить ' + product.name + '?',
+    deleteCounterparty(counterparty: ICounterParty) {
+        this._confirmationService.confirm({
+            message: 'Вы уверены, что хотите удалить ' + counterparty.name + '?',
             header: 'Подтверждение',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.counterparties.set(this.counterparties().filter((val) => val.id !== product.id));
-                //this.product = {};
-                this.messageService.add({
+                this.counterparties.set(this.counterparties().filter((val) => val.id !== counterparty.id));
+                this._messageService.add({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Product Deleted',
+                    detail: 'Counterparty Deleted',
                     life: 3000
                 });
             }

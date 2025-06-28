@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CategoryService } from '../../../services/category.service';
+import { CategoryService } from '../../../services';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { NgIf } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -8,7 +8,7 @@ import { Toolbar } from 'primeng/toolbar';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { DialogService } from 'primeng/dynamicdialog';
 import { CategoryEditDialogComponent } from './category-edit-dialog/category-edit-dialog.component';
-import { ICategory } from '../../../interfaces/category.interface';
+import { ICategory } from '../../../interfaces';
 import { first, take } from 'rxjs';
 import { Toast } from 'primeng/toast';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -22,16 +22,17 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     styleUrl: './category.component.scss'
 })
 export class CategoryComponent {
-    public categories = rxResource({
-        loader: () => this.categoryService.getAll()
+    public readonly categories = rxResource({
+        loader: () => this._categoryService.getAll()
     });
-    private categoryService = inject(CategoryService);
-    private dialogService = inject(DialogService);
-    private confirmationService = inject(ConfirmationService);
-    private messageService = inject(MessageService);
+
+    private readonly _categoryService = inject(CategoryService);
+    private readonly _dialogService = inject(DialogService);
+    private readonly _confirmationService = inject(ConfirmationService);
+    private readonly _messageService = inject(MessageService);
 
     openCategoryDialog(category?: ICategory) {
-        this.dialogService
+        this._dialogService
             .open(CategoryEditDialogComponent, {
                 header: category ? 'Изменить категорию' : 'Добавить категорию',
                 modal: true,
@@ -61,30 +62,30 @@ export class CategoryComponent {
             });
     }
 
-  remove(event: Event, category: ICategory) {
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Вы хотите удалить эту запись?',
-      icon: 'pi pi-info-circle',
-      rejectButtonProps: {
-        label: 'Отмена',
-        severity: 'secondary',
-        outlined: true
-      },
-      acceptButtonProps: {
-        label: 'Удалить',
-        severity: 'danger'
-      },
-      accept: () => {
-        this.categoryService.remove(category.id!)
-          .pipe(first())
-          .subscribe(() => {
-            this.categories.value.update(values => {
-              return values?.filter((i) => i.id !== category.id);
-            });
-            this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Запись удалена', life: 3000 });
-          })
-      },
-    });
-  }
+    remove(event: Event, category: ICategory) {
+        this._confirmationService.confirm({
+            target: event.target as EventTarget,
+            message: 'Вы хотите удалить эту запись?',
+            icon: 'pi pi-info-circle',
+            rejectButtonProps: {
+                label: 'Отмена',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptButtonProps: {
+                label: 'Удалить',
+                severity: 'danger'
+            },
+            accept: () => {
+                this._categoryService.remove(category.id!)
+                    .pipe(first())
+                    .subscribe(() => {
+                        this.categories.value.update(values => {
+                            return values?.filter((i) => i.id !== category.id);
+                        });
+                        this._messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Запись удалена', life: 3000 });
+                    })
+            },
+        });
+    }
 }

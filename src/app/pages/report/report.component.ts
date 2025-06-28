@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { signal } from '@angular/core';
 
 @Component({
   selector: 'app-report',
@@ -7,5 +8,9 @@ import { Component } from '@angular/core';
   styleUrl: './report.component.scss'
 })
 export class ReportComponent {
+  public readonly reports = signal<any[]>([]);
+  public readonly loading = signal(false);
 
+  // TODO: Add report service when available
+  // private readonly _reportService = inject(ReportService);
 }

@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CategoryService } from '../../../../services/category.service';
+import { CategoryService } from '../../../../services';
 import { finalize, first, Observable } from 'rxjs';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ICategory } from '../../../../interfaces/category.interface';
+import { ICategory } from '../../../../interfaces';
 import { InputText } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { Button } from 'primeng/button';
@@ -16,16 +16,17 @@ import { MessageService } from 'primeng/api';
     styleUrl: './category-edit-dialog.component.scss'
 })
 export class CategoryEditDialogComponent {
-    public categoryControl = new FormControl<string>('', Validators.required);
+    public readonly categoryControl = new FormControl<string>('', Validators.required);
     public loading = false;
     public category?: ICategory;
-    private categoryService = inject(CategoryService);
-    private dialogService = inject(DialogService);
-    private dialogRef = inject(DynamicDialogRef);
-    private messageService = inject(MessageService);
+
+    private readonly _categoryService = inject(CategoryService);
+    private readonly _dialogService = inject(DialogService);
+    private readonly _dialogRef = inject(DynamicDialogRef);
+    private readonly _messageService = inject(MessageService);
 
     constructor() {
-        this.category = this.dialogService.getInstance(this.dialogRef).data;
+        this.category = this._dialogService.getInstance(this._dialogRef).data;
 
         if (this.category) {
             this.categoryControl.setValue(this.category.name);
@@ -39,24 +40,24 @@ export class CategoryEditDialogComponent {
         let message = 'Добавлена новая категория.';
 
         if (this.category) {
-            obs = this.categoryService.update({
+            obs = this._categoryService.update({
                 id: this.category!.id,
                 name: this.categoryControl.value!
             });
             message = 'Категория сохранена.'
         } else {
-            obs = this.categoryService.create({ name: this.categoryControl.value! });
+            obs = this._categoryService.create({ name: this.categoryControl.value! });
         }
         obs.pipe(
             finalize(() => (this.loading = false)),
             first()
         ).subscribe((category) => {
-            this.dialogRef.close(category);
-            this.messageService.add({ severity: 'success', summary: 'Успех', detail: message, life: 3000 });
+            this._dialogRef.close(category);
+            this._messageService.add({ severity: 'success', summary: 'Успех', detail: message, life: 3000 });
         });
     }
 
     close() {
-        this.dialogRef.close();
+        this._dialogRef.close();
     }
 }

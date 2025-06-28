@@ -1,26 +1,23 @@
-import { Component, HostListener, inject, input, OnInit } from '@angular/core';
+import { Component, HostListener, inject, input, OnInit, signal } from '@angular/core';
 import { InputText } from 'primeng/inputtext';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextareaModule } from 'primeng/textarea';
-import { ProductService } from '../../../services/product.service';
+import { ProductService } from '../../../services';
 import { Button } from 'primeng/button';
 import { Select } from 'primeng/select';
 import { Divider } from 'primeng/divider';
 import { first, take } from 'rxjs';
-import { cleanObject } from '../../../operators/clean-object';
-import { CategoryService } from '../../../services/category.service';
+import { cleanObject } from '../../../operators';
+import { CategoryService } from '../../../services';
 import { rxResource } from '@angular/core/rxjs-interop';
-import {
-    CategoryEditDialogComponent
-} from '../../setting/category/category-edit-dialog/category-edit-dialog.component';
-import { ICategory } from '../../../interfaces/category.interface';
+import { CategoryEditDialogComponent } from '../../setting/category/category-edit-dialog/category-edit-dialog.component';
+import { ICategory, ICountry, IProduct } from '../../../interfaces';
 import { DialogService } from 'primeng/dynamicdialog';
-import { CountryService } from '../../../services/country.service';
+import { CountryService } from '../../../services';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
-import { ICountry } from '../../../interfaces/country.interface';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
-import { UnitService } from '../../../services/unit.service';
+import { UnitService } from '../../../services';
 
 @Component({
     selector: 'app-product-edit',
@@ -30,80 +27,86 @@ import { UnitService } from '../../../services/unit.service';
     providers: [ProductService, DialogService]
 })
 export class ProductEditComponent implements OnInit {
-    public id = input<string>();
-    public form: FormGroup;
-    public categories = rxResource({
-        loader: () => this.categoryService.getAll()
+    public readonly id = input<string>();
+    public readonly form = new FormGroup({
+        id: new FormControl<string | null>(null),
+        name: new FormControl<string | null>(null, [Validators.required]),
+        barcode: new FormControl<string | null>(null),
+        sku: new FormControl<string | null>(null),
+        category: new FormControl<string | null>(null),
+        purchasePrice: new FormControl<number | null>(null),
+        salePrice: new FormControl<number | null>(null),
+        description: new FormControl<string | null>(null),
+        country: new FormControl<string | null>(null),
+        counterparty: new FormControl<string | null>(null),
+        unit: new FormControl<string | null>(null),
+        weight: new FormControl<number>(0),
+        volume: new FormControl<number>(0)
     });
-    public units = rxResource({
-        loader: () => this.unitService.getAll()
+
+    public readonly categories = rxResource({
+        loader: () => this._categoryService.getAll()
     });
+
+    public readonly units = rxResource({
+        loader: () => this._unitService.getAll()
+    });
+
     public countries: ICountry[] = [];
     public filteredCountries: ICountry[] = [];
-    private buffer: string = ''; // Буфер для накопления символов
-    private lastKeyTime: number = 0; // Время последнего ввода
-    private productService = inject(ProductService);
-    private categoryService = inject(CategoryService);
-    private countryService = inject(CountryService);
-    private unitService = inject(UnitService);
-    private dialogService = inject(DialogService);
-    private messageService = inject(MessageService);
-    private router = inject(Router);
 
-    constructor() {
-        this.form = new FormGroup({
-            id: new FormControl(null),
-            name: new FormControl(null, [Validators.required]),
-            barcode: new FormControl(null),
-            sku: new FormControl(null),
-            category: new FormControl(null),
-            purchasePrice: new FormControl(null),
-            salePrice: new FormControl(null),
-            description: new FormControl(null),
-            country: new FormControl(null),
-            counterparty: new FormControl(null),
-            unit: new FormControl(null),
-            weight: new FormControl(0),
-            volume: new FormControl(0)
-        });
-    }
+    private readonly _buffer = signal<string>('');
+    private readonly _lastKeyTime = signal<number>(0);
+
+    private readonly _productService = inject(ProductService);
+    private readonly _categoryService = inject(CategoryService);
+    private readonly _countryService = inject(CountryService);
+    private readonly _unitService = inject(UnitService);
+    private readonly _dialogService = inject(DialogService);
+    private readonly _messageService = inject(MessageService);
+    private readonly _router = inject(Router);
 
     ngOnInit() {
-        this.getProduct();
-        this.getCountry();
+        this._getProduct();
+        this._getCountry();
     }
 
     submit() {
-        const formData = cleanObject(this.form.value);
-        this.productService
+        const formData = cleanObject(this.form.value) as IProduct;
+        this._productService
             .create(formData)
             .pipe(first())
             .subscribe((product) => {
-                this.messageService.add({ severity: 'success', summary: 'Успех', detail: 'Товар успешно добавлен.', life: 3000 });
-                this.router.navigate(['/products']).then();
+                this._messageService.add({
+                    severity: 'success',
+                    summary: 'Успех',
+                    detail: 'Товар успешно добавлен.',
+                    life: 3000
+                });
+                this._router.navigate(['/products']).then();
             });
     }
 
     @HostListener('window:keydown', ['$event'])
     handleKeyDown(event: KeyboardEvent): void {
         const currentTime = new Date().getTime();
-        const timeDiff = currentTime - this.lastKeyTime;
+        const timeDiff = currentTime - this._lastKeyTime();
 
         if (timeDiff < 100) {
-            this.buffer += event.key;
+            this._buffer.set(this._buffer() + event.key);
         } else {
-            this.buffer = event.key;
+            this._buffer.set(event.key);
         }
 
-        this.lastKeyTime = currentTime;
+        this._lastKeyTime.set(currentTime);
 
-        if (event.key === 'Enter' || this.buffer.endsWith('Ente')) {
-            this.processBuffer();
+        if (event.key === 'Enter' || this._buffer().endsWith('Ente')) {
+            this._processBuffer();
         }
     }
 
     addCategory() {
-        this.dialogService
+        this._dialogService
             .open(CategoryEditDialogComponent, {
                 header: 'Добавить категорию',
                 modal: true,
@@ -118,35 +121,38 @@ export class ProductEditComponent implements OnInit {
             .subscribe((r: ICategory) => {
                 if (!r) return;
                 this.categories.value.update((values) => [...values!, r]);
-                this.form.get('category')?.setValue(r.id);
+                this.form.get('category')?.setValue(r.id?.toString() || null);
             });
     }
 
     searchCountry(e: AutoCompleteCompleteEvent) {
-        this.filteredCountries = this.countries.filter(i => i.name.toLowerCase().includes(e.query.toLowerCase()));
+        this.filteredCountries = this.countries.filter((i) => i.name.toLowerCase().includes(e.query.toLowerCase()));
     }
 
-    private processBuffer(): void {
-        this.form.get('barcode')?.setValue(this.buffer.replace(/Ente?r?$/, ''));
-        this.buffer = '';
+    private _processBuffer(): void {
+        this.form.get('barcode')?.setValue(this._buffer().replace(/Ente?r?$/, ''));
+        this._buffer.set('');
     }
 
-    private getProduct() {
+    private _getProduct() {
         if (this.id() === 'new') return;
 
-        this.productService
+        this._productService
             .getOne(this.id()!)
             .pipe(first())
-            .subscribe((product) => {
-                this.form.patchValue(product);
+            .subscribe((products) => {
+                if (products && products.length > 0) {
+                    this.form.patchValue(products[0]);
+                }
             });
     }
 
-    private getCountry() {
-        this.countryService.getAll()
-        .pipe(first())
-        .subscribe((countries) => {
-            this.countries = this.filteredCountries = countries;
-        })
+    private _getCountry() {
+        this._countryService
+            .getAll()
+            .pipe(first())
+            .subscribe((countries) => {
+                this.countries = this.filteredCountries = countries;
+            });
     }
 }

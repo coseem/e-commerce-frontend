@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -82,9 +82,8 @@ import { LayoutService } from '../service/layout.service';
     </div>`
 })
 export class AppTopbar {
-    items!: MenuItem[];
-
-    constructor(public layoutService: LayoutService) {}
+    public readonly items!: MenuItem[];
+    public readonly layoutService = inject(LayoutService);
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));

@@ -1,4 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, inject } from '@angular/core';
 import { AppMenu } from './menu/app.menu';
 
 @Component({
@@ -10,5 +10,5 @@ import { AppMenu } from './menu/app.menu';
     </div>`
 })
 export class AppSidebar {
-    constructor(public el: ElementRef) {}
+    public readonly el = inject(ElementRef);
 }

@@ -11,4 +11,6 @@ import { Toast } from 'primeng/toast';
         <p-toast></p-toast>
     `
 })
-export class AppComponent {}
+export class AppComponent {
+    // Main app component - minimal and clean
+}

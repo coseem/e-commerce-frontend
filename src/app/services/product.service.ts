@@ -1,22 +1,24 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { IProduct } from '../interfaces/product.interface';
+import { IProduct } from '../interfaces';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ProductService {
-    private apiUrl = environment.apiUrl;
-    private readonly http = inject(HttpClient);
+    private readonly _apiUrl = environment.apiUrl;
+    private readonly _http = inject(HttpClient);
 
     getAll() {
-        return this.http.get<IProduct[]>(`${this.apiUrl}/products`);
+        return this._http.get<IProduct[]>(`${this._apiUrl}/products`);
     }
 
     getOne(id: string) {
-        return this.http.get<IProduct[]>(`${this.apiUrl}/products/` + id);
+        return this._http.get<IProduct[]>(`${this._apiUrl}/products/` + id);
     }
 
     create(product: IProduct) {
-        return this.http.post<IProduct>(`${this.apiUrl}/products`, product);
+        return this._http.post<IProduct>(`${this._apiUrl}/products`, product);
     }
 }

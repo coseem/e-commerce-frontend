@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
@@ -10,18 +10,21 @@ import { AppMenuitem } from './app.menuitem';
     imports: [CommonModule, AppMenuitem, RouterModule],
     template: `
         <ul class="layout-menu">
-            <ng-container *ngFor="let item of model; let i = index">
-                <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
-                <li *ngIf="item.separator" class="menu-separator"></li>
-            </ng-container>
+            @for (item of model(); track item; let i = $index) {
+                @if (!item.separator) {
+                    <li app-menuitem [item]="item" [index]="i" [root]="true"></li>
+                } @else {
+                    <li class="menu-separator"></li>
+                }
+            }
         </ul>
     `
 })
 export class AppMenu implements OnInit {
-    model: MenuItem[] = [];
+    public readonly model = signal<MenuItem[]>([]);
 
     ngOnInit() {
-        this.model = [
+        this.model.set([
             {
                 label: 'Home',
                 items: [{ label: 'Главная', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
@@ -89,6 +92,6 @@ export class AppMenu implements OnInit {
                     }
                 ]
             },
-        ];
+        ]);
     }
 }

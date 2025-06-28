@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, inject } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ProductService } from '../../services/product.service';
+import { ProductService } from '../../services';
 import { Table, TableModule } from 'primeng/table';
 import { Toolbar } from 'primeng/toolbar';
 import { Button } from 'primeng/button';
@@ -12,7 +12,7 @@ import { InputText } from 'primeng/inputtext';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { first } from 'rxjs';
 import { RouterLink } from '@angular/router';
-import { IProduct } from '../../interfaces/product.interface';
+import { IProduct } from '../../interfaces';
 
 interface Column {
   field: string;
@@ -33,36 +33,30 @@ interface ExportColumn {
     providers: [MessageService, ProductService, ConfirmationService]
 })
 export class ProductComponent implements OnInit {
-    products = signal<IProduct[]>([]);
+    public readonly products = signal<IProduct[]>([]);
+    public readonly selectedProducts = signal<IProduct[] | null>(null);
 
-    product!: IProduct;
+    private readonly _productService = inject(ProductService);
+    private readonly _messageService = inject(MessageService);
+    private readonly _confirmationService = inject(ConfirmationService);
 
-    selectedProducts!: IProduct[] | null;
+    public product!: IProduct;
+    public statuses!: any[];
+    public exportColumns!: ExportColumn[];
+    public cols!: Column[];
 
-    statuses!: any[];
-
-    @ViewChild('dt') dt!: Table;
-
-    exportColumns!: ExportColumn[];
-
-    cols!: Column[];
-
-    constructor(
-        private productService: ProductService,
-        private messageService: MessageService,
-        private confirmationService: ConfirmationService
-    ) {}
+    @ViewChild('dt') private readonly _dt!: Table;
 
     exportCSV() {
-        this.dt.exportCSV();
+        this._dt.exportCSV();
     }
 
     ngOnInit() {
-        this.loadProducts();
+        this._loadProducts();
     }
 
-    loadProducts() {
-        this.productService
+    private _loadProducts() {
+        this._productService
             .getAll()
             .pipe(first())
             .subscribe((r) => this.products.set(r));
@@ -88,14 +82,14 @@ export class ProductComponent implements OnInit {
     }
 
     deleteSelectedProducts() {
-        this.confirmationService.confirm({
+        this._confirmationService.confirm({
             message: 'Вы уверены, что хотите удалить выбранные товары?',
             header: 'Подтверждение',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.products.set(this.products().filter((val) => !this.selectedProducts?.includes(val)));
-                this.selectedProducts = null;
-                this.messageService.add({
+                this.products.set(this.products().filter((val) => !this.selectedProducts()?.includes(val)));
+                this.selectedProducts.set(null);
+                this._messageService.add({
                     severity: 'success',
                     summary: 'Successful',
                     detail: 'Products Deleted',
@@ -106,14 +100,14 @@ export class ProductComponent implements OnInit {
     }
 
     deleteProduct(product: IProduct) {
-        this.confirmationService.confirm({
+        this._confirmationService.confirm({
             message: 'Вы уверены, что хотите удалить ' + product.name + '?',
             header: 'Подтверждение',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.products.set(this.products().filter((val) => val.id !== product.id));
                 //this.product = {};
-                this.messageService.add({
+                this._messageService.add({
                     severity: 'success',
                     summary: 'Successful',
                     detail: 'Product Deleted',
@@ -123,7 +117,7 @@ export class ProductComponent implements OnInit {
         });
     }
 
-    findIndexById(id: string): number {
+    private _findIndexById(id: string): number {
         let index = -1;
         for (let i = 0; i < this.products().length; i++) {
             if (this.products()[i].id === id) {

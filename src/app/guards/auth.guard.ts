@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../services';
 
 export const authGuard: CanActivateFn = (route, state) => {
     const authService = inject(AuthService);
@@ -9,9 +9,9 @@ export const authGuard: CanActivateFn = (route, state) => {
     const token = authService.getToken();
 
     if (token) {
-        return true; // ✅ Пользователь авторизован
+        return true;
     } else {
         router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url } }).then();
-        return false; // 🚫 Перенаправление на страницу логина
+        return false;
     }
 };
